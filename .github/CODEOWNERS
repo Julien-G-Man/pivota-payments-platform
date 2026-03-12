@@ -1,0 +1,7 @@
+# Changes to these paths require team lead approval
+app/core/money.py               @team-lead @security-lead
+app/core/idempotency.py         @team-lead
+app/domains/compliance/         @compliance-lead @team-lead
+app/db/roles.sql                @team-lead @dba
+migrations/versions/            @team-lead @dba
+CLAUDE.md                       @team-lead

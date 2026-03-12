@@ -1,0 +1,5 @@
+FROM traderflow-backend:latest
+
+CMD ["celery", "-A", "app.config.celery", "worker", \
+     "--loglevel=info", \
+     "--queues=ingest,reports,analytics,compliance,notify,monitoring"]
