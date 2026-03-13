@@ -31,7 +31,7 @@ def create_app() -> FastAPI:
     configure_logging()
 
     app = FastAPI(
-        title="TraderFlow API",
+        title="Pivota API",
         version="0.1.0",
         docs_url="/docs",      # Disabled in production via middleware
         redoc_url="/redoc",

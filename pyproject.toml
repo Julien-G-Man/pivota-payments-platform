@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.backends.legacy:build"
 
 [project]
-name = "traderflow-backend"
+name = "pivota-backend"
 version = "0.1.0"
-description = "TraderFlow fintech backend — MTN MoMo ingestion, analytics, AI chatbot, compliance"
+description = "Pivota fintech backend — MTN MoMo ingestion, analytics, AI chatbot, compliance"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.111",

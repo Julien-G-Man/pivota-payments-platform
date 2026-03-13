@@ -6,7 +6,7 @@ from celery.schedules import crontab
 from app.config.settings import settings
 
 celery_app = Celery(
-    "traderflow",
+    "pivota",
     broker=f"{settings.redis_url}/{settings.redis_db_celery}",
     backend=f"{settings.redis_url}/{settings.redis_db_celery}",
     include=[

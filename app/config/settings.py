@@ -7,7 +7,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    app_name: str = "TraderFlow"
+    app_name: str = "Pivota"
     environment: str = Field("development", pattern="^(development|staging|production)$")
     debug: bool = False
 
@@ -33,11 +33,11 @@ class Settings(BaseSettings):
     jwt_refresh_token_expire_days: int = 7
 
     sendgrid_api_key: str = ""
-    sendgrid_from_email: str = "reports@traderflow.com"
+    sendgrid_from_email: str = "reports@pivota.com"
 
     hubtel_client_id: str = ""
     hubtel_client_secret: str = ""
-    hubtel_sender_id: str = "TraderFlow"
+    hubtel_sender_id: str = "Pivota"
 
     aws_region: str = "eu-west-1"
     s3_bucket_reports: str = ""

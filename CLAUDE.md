@@ -1,6 +1,6 @@
-# TraderFlow Backend — Complete Architecture & Implementation Guide
+# Pivota Backend — Complete Architecture & Implementation Guide
 
-> **For Claude Code:** This document is the single source of truth for the TraderFlow backend.
+> **For Claude Code:** This document is the single source of truth for the Pivota backend.
 > Read it fully before writing any code. Every structural decision here is intentional.
 > Do not deviate from the patterns defined in this document without explicit instruction.
 
@@ -44,7 +44,7 @@
 
 ## 1. Project Overview
 
-**TraderFlow** is a fintech platform for traders to manage expenses, track money in/out via MTN Mobile Money (MoMo), receive AI-powered spending insights, view dashboards, and get automated monthly email reports.
+**Pivota** is a fintech platform for traders to manage expenses, track money in/out via MTN Mobile Money (MoMo), receive AI-powered spending insights, view dashboards, and get automated monthly email reports.
 
 ### What the platform does
 
@@ -175,7 +175,7 @@ In production, all secrets are read from AWS Secrets Manager via `app/core/secre
 ## 4. Repository Structure
 
 ```
-traderflow-backend/
+pivota-backend/
 │
 ├── .github/
 │   ├── workflows/
@@ -459,37 +459,37 @@ class Money:
 ### `app/core/exceptions.py`
 
 ```python
-class TraderFlowError(Exception):
+class PivotaError(Exception):
     """Base exception for all application errors."""
 
-class FloatMoneyError(TraderFlowError):
+class FloatMoneyError(PivotaError):
     """Raised when float is passed to Money()."""
 
-class CurrencyMismatchError(TraderFlowError):
+class CurrencyMismatchError(PivotaError):
     """Raised on arithmetic between different currencies."""
 
-class DuplicateTransactionError(TraderFlowError):
+class DuplicateTransactionError(PivotaError):
     """Raised when idempotency check finds existing transaction."""
 
-class IdempotencyConflictError(TraderFlowError):
+class IdempotencyConflictError(PivotaError):
     """Raised when idempotency key is acquired concurrently."""
 
-class ComplianceHoldError(TraderFlowError):
+class ComplianceHoldError(PivotaError):
     """Raised when a transaction is blocked by AML hold."""
 
-class KYCRequiredError(TraderFlowError):
+class KYCRequiredError(PivotaError):
     """Raised when action requires completed KYC."""
 
-class InsufficientFundsError(TraderFlowError):
+class InsufficientFundsError(PivotaError):
     """Raised when account balance is insufficient."""
 
-class MoMoAPIError(TraderFlowError):
+class MoMoAPIError(PivotaError):
     """Raised on MTN MoMo API errors."""
 
-class WebhookSignatureError(TraderFlowError):
+class WebhookSignatureError(PivotaError):
     """Raised when MoMo webhook HMAC signature fails verification."""
 
-class SecretsError(TraderFlowError):
+class SecretsError(PivotaError):
     """Raised when secret cannot be retrieved."""
 ```
 
@@ -626,7 +626,7 @@ from pydantic import Field
 from functools import lru_cache
 
 class Settings(BaseSettings):
-    app_name: str = "TraderFlow"
+    app_name: str = "Pivota"
     environment: str = Field("development", pattern="^(development|staging|production)$")
     debug: bool = False
 
@@ -652,11 +652,11 @@ class Settings(BaseSettings):
     jwt_refresh_token_expire_days: int = 7
 
     sendgrid_api_key: str
-    sendgrid_from_email: str = "reports@traderflow.com"
+    sendgrid_from_email: str = "reports@pivota.com"
 
     hubtel_client_id: str
     hubtel_client_secret: str
-    hubtel_sender_id: str = "TraderFlow"
+    hubtel_sender_id: str = "Pivota"
 
     aws_region: str = "eu-west-1"
     s3_bucket_reports: str
@@ -703,7 +703,7 @@ engine_replica = create_async_engine(
 )
 
 engine_ai_readonly = create_async_engine(
-    settings.database_url.replace("traderflow_app", "traderflow_ai"),
+    settings.database_url.replace("pivota_app", "pivota_ai"),
     pool_size=5,
     pool_pre_ping=True,
 )
@@ -741,7 +741,7 @@ from celery.schedules import crontab
 from app.config.settings import settings
 
 celery_app = Celery(
-    "traderflow",
+    "pivota",
     broker=f"{settings.redis_url}/{settings.redis_db_celery}",
     backend=f"{settings.redis_url}/{settings.redis_db_celery}",
     include=[
@@ -1363,7 +1363,7 @@ No tool has a write path.
 ### System prompt (`app/domains/ai/guardrails.py`)
 
 ```
-You are TraderFlow AI, a financial assistant for traders in Ghana.
+You are Pivota AI, a financial assistant for traders in Ghana.
 
 Rules:
 1. Never modify, delete, or create financial data
@@ -1506,7 +1506,7 @@ def upgrade():
 
 ### Architecture
 
-- Test DB: separate Postgres `traderflow_test`, fresh per session
+- Test DB: separate Postgres `pivota_test`, fresh per session
 - Redis: `fakeredis` for unit tests, real Redis for integration tests
 - Celery: `CELERY_TASK_ALWAYS_EAGER = True` — tasks run synchronously
 - MoMo client: mocked with `AsyncMock` — never calls real MTN API
@@ -1553,7 +1553,7 @@ mailhog       — local email capture (SMTP 1025, UI 8025)
 
 ### Image notes
 
-- Non-root user `traderflow` in production
+- Non-root user `pivota` in production
 - Two-stage build: builder + runtime
 - Worker uses same image, different CMD
 
@@ -1595,7 +1595,7 @@ migrations/versions/
 ### JWT
 
 - RS256 (RSA 2048-bit)
-- Private key: AWS Secrets Manager `traderflow/jwt/private_key`
+- Private key: AWS Secrets Manager `pivota/jwt/private_key`
 - Access token: 15 min TTL
 - Refresh token: 7 day TTL, rotated on every use, stored as bcrypt hash
 - Refresh token reuse detection: old token reuse → revoke all user tokens
@@ -1610,10 +1610,10 @@ migrations/versions/
 
 | Role                    | Permissions                                                   |
 |-------------------------|---------------------------------------------------------------|
-| `traderflow_app`        | CRUD on most tables; INSERT-only on `audit_events` + `transactions` |
-| `traderflow_ai`         | SELECT on `transactions`, `accounts`, `transaction_embeddings` only |
-| `traderflow_audit`      | SELECT on `audit_events` only                                 |
-| `traderflow_migrations` | Schema management (Alembic only)                              |
+| `pivota_app`        | CRUD on most tables; INSERT-only on `audit_events` + `transactions` |
+| `pivota_ai`         | SELECT on `transactions`, `accounts`, `transaction_embeddings` only |
+| `pivota_audit`      | SELECT on `audit_events` only                                 |
+| `pivota_migrations` | Schema management (Alembic only)                              |
 
 ### Data Protection
 
@@ -1668,8 +1668,8 @@ ENVIRONMENT=development
 DEBUG=false
 
 # Database
-DATABASE_URL=postgresql+asyncpg://traderflow_app:password@localhost:5432/traderflow
-DATABASE_REPLICA_URL=postgresql+asyncpg://traderflow_app:password@localhost:5433/traderflow
+DATABASE_URL=postgresql+asyncpg://pivota_app:password@localhost:5432/pivota
+DATABASE_REPLICA_URL=postgresql+asyncpg://pivota_app:password@localhost:5433/pivota
 
 # Redis
 REDIS_URL=redis://localhost:6379
@@ -1682,19 +1682,19 @@ MOMO_ENVIRONMENT=sandbox
 
 # Email
 SENDGRID_API_KEY=SG.xxx
-SENDGRID_FROM_EMAIL=reports@traderflow.com
+SENDGRID_FROM_EMAIL=reports@pivota.com
 
 # SMS
 HUBTEL_CLIENT_ID=xxx
 HUBTEL_CLIENT_SECRET=xxx
-HUBTEL_SENDER_ID=TraderFlow
+HUBTEL_SENDER_ID=Pivota
 
 # AWS
 AWS_REGION=eu-west-1
 AWS_ACCESS_KEY_ID=xxx          # Dev only — prod uses IAM role
 AWS_SECRET_ACCESS_KEY=xxx      # Dev only
-S3_BUCKET_REPORTS=traderflow-reports-dev
-S3_BUCKET_KYC_DOCS=traderflow-kyc-dev
+S3_BUCKET_REPORTS=pivota-reports-dev
+S3_BUCKET_KYC_DOCS=pivota-kyc-dev
 
 # LLM
 ANTHROPIC_API_KEY=sk-ant-xxx
@@ -1715,28 +1715,28 @@ AML_VELOCITY_MAX_PER_HOUR=10
 **File: `app/db/roles.sql`** — run once at infra setup
 
 ```sql
-CREATE ROLE traderflow_app WITH LOGIN PASSWORD '${APP_PASSWORD}';
-GRANT CONNECT ON DATABASE traderflow TO traderflow_app;
-GRANT USAGE ON SCHEMA public TO traderflow_app;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO traderflow_app;
-REVOKE UPDATE, DELETE ON audit_events FROM traderflow_app;
-REVOKE UPDATE, DELETE ON transactions FROM traderflow_app;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO traderflow_app;
+CREATE ROLE pivota_app WITH LOGIN PASSWORD '${APP_PASSWORD}';
+GRANT CONNECT ON DATABASE pivota TO pivota_app;
+GRANT USAGE ON SCHEMA public TO pivota_app;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO pivota_app;
+REVOKE UPDATE, DELETE ON audit_events FROM pivota_app;
+REVOKE UPDATE, DELETE ON transactions FROM pivota_app;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO pivota_app;
 
-CREATE ROLE traderflow_ai WITH LOGIN PASSWORD '${AI_PASSWORD}';
-GRANT CONNECT ON DATABASE traderflow TO traderflow_ai;
-GRANT USAGE ON SCHEMA public TO traderflow_ai;
-GRANT SELECT ON transactions TO traderflow_ai;
-GRANT SELECT ON accounts TO traderflow_ai;
-GRANT SELECT ON transaction_embeddings TO traderflow_ai;
+CREATE ROLE pivota_ai WITH LOGIN PASSWORD '${AI_PASSWORD}';
+GRANT CONNECT ON DATABASE pivota TO pivota_ai;
+GRANT USAGE ON SCHEMA public TO pivota_ai;
+GRANT SELECT ON transactions TO pivota_ai;
+GRANT SELECT ON accounts TO pivota_ai;
+GRANT SELECT ON transaction_embeddings TO pivota_ai;
 
-CREATE ROLE traderflow_audit WITH LOGIN PASSWORD '${AUDIT_PASSWORD}';
-GRANT CONNECT ON DATABASE traderflow TO traderflow_audit;
-GRANT USAGE ON SCHEMA public TO traderflow_audit;
-GRANT SELECT ON audit_events TO traderflow_audit;
+CREATE ROLE pivota_audit WITH LOGIN PASSWORD '${AUDIT_PASSWORD}';
+GRANT CONNECT ON DATABASE pivota TO pivota_audit;
+GRANT USAGE ON SCHEMA public TO pivota_audit;
+GRANT SELECT ON audit_events TO pivota_audit;
 
-CREATE ROLE traderflow_migrations WITH LOGIN PASSWORD '${MIGRATIONS_PASSWORD}';
-GRANT ALL PRIVILEGES ON DATABASE traderflow TO traderflow_migrations;
+CREATE ROLE pivota_migrations WITH LOGIN PASSWORD '${MIGRATIONS_PASSWORD}';
+GRANT ALL PRIVILEGES ON DATABASE pivota TO pivota_migrations;
 ```
 
 ---
@@ -1830,8 +1830,8 @@ def on_task_failure(exc, task_id, args, kwargs, einfo):
 
 ```bash
 # 1. Clone
-git clone git@github.com:your-org/traderflow-backend.git
-cd traderflow-backend
+git clone git@github.com:your-org/pivota-backend.git
+cd pivota-backend
 
 # 2. Generate JWT keys
 mkdir -p keys

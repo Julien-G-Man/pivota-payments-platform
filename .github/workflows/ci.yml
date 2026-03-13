@@ -14,8 +14,8 @@ jobs:
       postgres:
         image: pgvector/pgvector:pg16
         env:
-          POSTGRES_DB: traderflow_test
-          POSTGRES_USER: traderflow_app
+          POSTGRES_DB: pivota_test
+          POSTGRES_USER: pivota_app
           POSTGRES_PASSWORD: testpassword
         ports: ["5432:5432"]
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
@@ -43,8 +43,8 @@ jobs:
       - name: Test
         run: pytest tests/ -v --cov=app --cov-report=xml
         env:
-          DATABASE_URL: postgresql+asyncpg://traderflow_app:testpassword@localhost:5432/traderflow_test
-          DATABASE_REPLICA_URL: postgresql+asyncpg://traderflow_app:testpassword@localhost:5432/traderflow_test
+          DATABASE_URL: postgresql+asyncpg://pivota_app:testpassword@localhost:5432/pivota_test
+          DATABASE_REPLICA_URL: postgresql+asyncpg://pivota_app:testpassword@localhost:5432/pivota_test
           REDIS_URL: redis://localhost:6379
           ENVIRONMENT: development
 

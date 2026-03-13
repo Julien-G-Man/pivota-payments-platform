@@ -19,7 +19,7 @@ engine_replica = create_async_engine(
 )
 
 engine_ai_readonly = create_async_engine(
-    settings.database_url.replace("traderflow_app", "traderflow_ai")
+    settings.database_url.replace("pivota_app", "pivota_ai")
     if settings.database_url
     else "",
     pool_size=5,
