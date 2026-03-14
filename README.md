@@ -1,4 +1,4 @@
-# TraderFlow
+# Pivota
 
 A fintech backend for traders to track money in/out via MTN Mobile Money, get AI-powered spending insights, view real-time dashboards, and receive automated monthly financial reports.
 
@@ -51,7 +51,7 @@ Three containers, one image:
 ## Repository Structure
 
 ```
-traderflow-backend/
+pivota-backend/
 ├── app/
 │   ├── main.py                      # FastAPI app factory
 │   ├── lifespan.py                  # Startup / shutdown lifecycle
@@ -92,7 +92,7 @@ These are enforced at the database and runtime level and must never be broken.
 2. **Idempotent MoMo writes** — Every webhook handler calls `check_and_set()` before processing.
 3. **Transactions are append-only** — No `UPDATE` or `DELETE` on the `transactions` table. Corrections use reversals.
 4. **Audit log is INSERT-only** — `audit_events` is never modified after write.
-5. **AI domain never writes** — Connected via a read-only Postgres role (`traderflow_ai`).
+5. **AI domain never writes** — Connected via a read-only Postgres role (`pivota_ai`).
 6. **No silent job failures** — Every Celery task has a DLQ handler and max 3 retries with backoff.
 7. **Secrets from AWS in production** — No `.env` files in prod. All secrets via AWS Secrets Manager.
 8. **Analytics uses the read replica** — `get_read_db()` always, never `get_db()`.

@@ -1,45 +1,45 @@
-"""All typed application exceptions for TraderFlow."""
+"""All typed application exceptions for Pivota."""
 
 
-class TraderFlowError(Exception):
+class PivotaError(Exception):
     """Base exception for all application errors."""
 
 
-class FloatMoneyError(TraderFlowError):
+class FloatMoneyError(PivotaError):
     """Raised when float is passed to Money()."""
 
 
-class CurrencyMismatchError(TraderFlowError):
+class CurrencyMismatchError(PivotaError):
     """Raised on arithmetic between different currencies."""
 
 
-class DuplicateTransactionError(TraderFlowError):
+class DuplicateTransactionError(PivotaError):
     """Raised when idempotency check finds existing transaction."""
 
 
-class IdempotencyConflictError(TraderFlowError):
+class IdempotencyConflictError(PivotaError):
     """Raised when idempotency key is acquired concurrently."""
 
 
-class ComplianceHoldError(TraderFlowError):
+class ComplianceHoldError(PivotaError):
     """Raised when a transaction is blocked by AML hold."""
 
 
-class KYCRequiredError(TraderFlowError):
+class KYCRequiredError(PivotaError):
     """Raised when action requires completed KYC."""
 
 
-class InsufficientFundsError(TraderFlowError):
+class InsufficientFundsError(PivotaError):
     """Raised when account balance is insufficient."""
 
 
-class MoMoAPIError(TraderFlowError):
+class MoMoAPIError(PivotaError):
     """Raised on MTN MoMo API errors."""
 
 
-class WebhookSignatureError(TraderFlowError):
+class WebhookSignatureError(PivotaError):
     """Raised when MoMo webhook HMAC signature fails verification."""
 
 
-class SecretsError(TraderFlowError):
+class SecretsError(PivotaError):
     """Raised when secret cannot be retrieved."""

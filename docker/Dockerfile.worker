@@ -1,4 +1,4 @@
-FROM traderflow-backend:latest
+FROM pivota-backend:latest
 
 CMD ["celery", "-A", "app.config.celery", "worker", \
      "--loglevel=info", \

@@ -13,8 +13,8 @@ logger = structlog.get_logger()
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Run on startup, yield, then run on shutdown."""
-    logger.info("TraderFlow starting up")
+    logger.info("Pivota starting up")
     # TODO: initialise DB connection pools, Redis, Celery beat healthcheck
     yield
-    logger.info("TraderFlow shutting down")
+    logger.info("Pivota shutting down")
     # TODO: gracefully close connection pools
